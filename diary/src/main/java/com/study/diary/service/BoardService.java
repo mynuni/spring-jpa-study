@@ -39,34 +39,20 @@ public class BoardService {
 		Board board = boardRepository.findById(id)
 				.orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다. id: " + id));
 		
-		// 여기서부터 build 관련 메서드 추출로 리팩토링할 것
-		return BoardDto.builder()
-				.id(board.getId())
-				.title(board.getTitle())
-				.content(board.getContent())
-				.author(board.getAuthor())
-				.build();
+		return convertToDto(board);
 
 	}
 
 	// 등록
 	@Transactional
 	public BoardDto createBoard(BoardDto boardDto) {
-		Board board = Board.builder()
-				.title(boardDto.getTitle())
-				.content(boardDto.getContent())
-				.author(boardDto.getAuthor())
-				.build();
+		Board board = convertToEntity(boardDto);
+		log.info("convert된 entity의 id는 null이어야 함: {}", board.getId() == null);
 
 		Board savedBoard = boardRepository.save(board);
-		log.info("저장된 게시물의 id: {}", savedBoard.getId());
+		log.info("save된 entity의 id는 null이 아니어야 함: {}", savedBoard.getId() != null);
 		
-		return BoardDto.builder()
-				.id(savedBoard.getId())
-				.title(savedBoard.getTitle())
-				.content(savedBoard.getContent())
-				.author(savedBoard.getAuthor())
-				.build();
+		return convertToDto(board);
 		
 	}
 
@@ -77,24 +63,20 @@ public class BoardService {
 				.orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다. id: " + id));
 		
 		log.info("업데이트 전");
-		log.info("업데이트 대상 id:", id);
+		log.info("업데이트 대상 id:{}", id);
 		log.info("제목:{}", foundBoard.getTitle());
 		log.info("내용:{}", foundBoard.getContent());
 		log.info("작성자:{}", foundBoard.getAuthor());
+		
 		foundBoard.update(boardDto.getTitle(), boardDto.getContent(), boardDto.getAuthor());
-
+		
 		log.info("업데이트 후");
 		log.info("제목:{}", foundBoard.getTitle());
 		log.info("내용:{}", foundBoard.getContent());
 		log.info("작성자:{}", foundBoard.getAuthor());
 		
-		return BoardDto.builder()
-				.id(foundBoard.getId())
-				.title(foundBoard.getTitle())
-				.content(foundBoard.getContent())
-				.author(foundBoard.getAuthor())
-				.build();
-		
+		return convertToDto(foundBoard);
+
 	}
 
 	// 삭제
@@ -106,7 +88,6 @@ public class BoardService {
 		
 	}
 	
-	// 우선 목록 스트림에만 적용
 	private BoardDto convertToDto(Board board) {
 		return BoardDto.builder()
 				.id(board.getId())
@@ -114,6 +95,16 @@ public class BoardService {
 				.content(board.getContent())
 				.author(board.getAuthor())
 				.build();
+
+	}
+	
+	private Board convertToEntity(BoardDto boardDto) {
+		return Board.builder()
+				.title(boardDto.getTitle())
+				.content(boardDto.getContent())
+				.author(boardDto.getAuthor())
+				.build();
+		
 	}
 
 }

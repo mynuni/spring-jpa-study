@@ -21,12 +21,11 @@ import lombok.RequiredArgsConstructor;
  * 	1. Pageable
  * 	2. ResponseEntity 상태코드 같이 반환
  * 	3. 회원:게시글 또는 게시글:댓글 1:N 관계 만들어 보기
- *  4. Service 클래스 나머지 Builder 메서드로 추출하기
- * 	5. Request/Response DTO 분리해보기
+ * 	4. Request/Response DTO 분리해보기
  * 
  *  복습할 것
  * 	1. UPDATE부분 @Transactional
- *  2. 영속성 컨텐스트
+ *  2. 영속성 컨텍스트
  *  3. Entity 설계 시 권장 사항
  */
 
